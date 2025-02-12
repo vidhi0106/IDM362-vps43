@@ -33,7 +33,7 @@ struct MainView: View {
 //                }
 //                .tag(2) // Unique tag
         }
-        .tint(Color("AccentColor"))
+        .tint(Color("Color"))
         .environmentObject(userData)
         
     }

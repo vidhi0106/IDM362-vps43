@@ -40,6 +40,7 @@ struct CalendarView: View {
                     .multilineTextAlignment(.center)
                     .fontWeight(.bold)
                     .padding(10)
+                    .foregroundStyle(Color("Color"))
                 
                 // Month Navigation
                 HStack {
@@ -47,20 +48,20 @@ struct CalendarView: View {
                         Image(systemName: "chevron.left.circle.fill")
                             .font(.title)
                             .padding(10)
-                            .tint(Color("AccentColor"))
+                            .tint(Color("Color"))
                             .imageScale(.large)
                     }
                     
                     Text(monthYearString(from: selectedMonth))
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundStyle(Color("AccentColor"))
+                        .foregroundStyle(Color("Color"))
                         .frame(width: 200)
                     
                     Button(action: { changeMonth(by: 1) }) {
                         Image(systemName: "chevron.right.circle.fill")
                             .font(.title)
-                            .tint(Color("AccentColor"))
+                            .tint(Color("Color"))
                             .padding(10)
                             .imageScale(.large)
                     }
@@ -73,7 +74,7 @@ struct CalendarView: View {
                         Text(day)
                             .fontWeight(.bold)
                             .frame(maxWidth: .infinity)
-                            .foregroundStyle(Color("AccentColor"))
+                            .foregroundStyle(Color("Color"))
                     }
                 }
                 .padding(.bottom, 5)
@@ -84,12 +85,12 @@ struct CalendarView: View {
                         if let day = day {
                             let dateKey = dateString(from: day)
                             let emotion = fakeEmotionLog[dateKey]
-                            let backgroundColor = emotion != nil ? emotionColors[emotion!] : Color.gray
+                            let backgroundColor = emotion != nil ? emotionColors[emotion!] : Color("customGrey")
                             
                             VStack {
                                 Text("\(calendar.component(.day, from: day))")
                                     .font(.caption)
-                                    .foregroundStyle(Color.black)
+                                    .foregroundStyle(Color("calendarText"))
                                 
                                 // Fixed space for mood emoji (empty if no mood is logged)
                                 if let emotion = emotion {
@@ -117,8 +118,9 @@ struct CalendarView: View {
                     }
                 }
                 .frame(height: 500)
+                .padding()
             }
-//            .padding()
+            
             Spacer()
         }
     }

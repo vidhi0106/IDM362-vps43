@@ -22,6 +22,7 @@ struct ContentView: View {
                     .multilineTextAlignment(.center)
                     .fontWeight(.bold)
                     .padding(10)
+                    .foregroundStyle(Color("Color"))
                 
                 Text("Pick the cloud that matches your mood!")
                     .font(.title3)
