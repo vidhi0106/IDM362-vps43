@@ -34,6 +34,9 @@ struct MainView: View {
 //                .tag(2) // Unique tag
         }
         .tint(Color("Color"))
+        .onAppear{
+            UITabBar.appearance().unselectedItemTintColor = .systemGray
+        }
         .environmentObject(userData)
         
     }

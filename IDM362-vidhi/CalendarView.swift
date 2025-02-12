@@ -90,7 +90,7 @@ struct CalendarView: View {
                             VStack {
                                 Text("\(calendar.component(.day, from: day))")
                                     .font(.caption)
-                                    .foregroundStyle(Color("calendarText"))
+                                    .foregroundStyle(Color.black)
                                 
                                 // Fixed space for mood emoji (empty if no mood is logged)
                                 if let emotion = emotion {

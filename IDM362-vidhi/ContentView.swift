@@ -29,6 +29,7 @@ struct ContentView: View {
                     .fontWeight(.semibold)
                     .multilineTextAlignment(.leading)
                     .padding()
+                    .foregroundStyle(Color("Color"))
                 
                 
                 
