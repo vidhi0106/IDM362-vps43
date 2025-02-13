@@ -13,6 +13,9 @@ class UserData: ObservableObject {
 struct MainView: View {
     @StateObject var userData = UserData()
     
+    // get color scheme from device
+       @Environment(\.colorScheme) var colorScheme
+    
     var body: some View {
         TabView(selection: $userData.ndx) {
             CalendarView()
@@ -34,9 +37,10 @@ struct MainView: View {
 //                .tag(2) // Unique tag
         }
         .tint(Color("Color"))
-        .onAppear{
-            UITabBar.appearance().unselectedItemTintColor = .systemGray
-        }
+        .onAppear {
+                    // Set unselected tab bar item color dynamically
+                    UITabBar.appearance().unselectedItemTintColor = UIColor(named: "navbar")
+                }
         .environmentObject(userData)
         
     }
