@@ -48,8 +48,9 @@ struct ContentView: View {
                                         .foregroundColor(.black)
                                         .padding(.top, -10)
                                 }
-                                .padding(20)
+                                .padding(30)
                             }
+                            
                         }
                     }
                 }
@@ -75,7 +76,7 @@ struct MoodDetailView: View {
     var body: some View {
         VStack {
             
-            Text("You picked \(moodName)!")
+            Text("You picked \(moodName)")
                 .font(.title)
                 .fontWeight(.bold)
                 .padding()
@@ -83,8 +84,7 @@ struct MoodDetailView: View {
             Image(moodImage)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 200, height: 200)
-                .padding()
+                .frame(width: 250, height: 250)
             
             
             Text("Add notes about your mood:")
@@ -95,7 +95,7 @@ struct MoodDetailView: View {
             TextEditor(text: $notes)
                 .frame(height: 150) // Adjust height here
                 .cornerRadius(10)
-                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.gray, lineWidth: 2) .background(Color.white))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.gray, lineWidth: 2))
                 .padding()
     
                 
@@ -113,13 +113,12 @@ struct MoodDetailView: View {
                         .font(.headline)
                         .foregroundColor(.black)
                         .padding()
-                        .frame(width: 150)
+                        .frame(width: 250)
                         .background(moodColor)
                         .cornerRadius(10)
                         .padding(.top)
             Spacer()
         }
-        .padding()
         .background(moodColor.opacity(0.2).edgesIgnoringSafeArea(.all))
 //        .navigationTitle("MoodLog")
                 .navigationBarTitleDisplayMode(.inline) // Keeps the title inline
@@ -137,6 +136,7 @@ struct MoodDetailView: View {
                     }
                 }
     }
+    
 }
 
 
