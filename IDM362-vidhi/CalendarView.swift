@@ -8,28 +8,25 @@
 import SwiftUI
 
 struct CalendarView: View {
+    @Binding var selectedDate: Date // Binding for the selected date
     let calendar = Calendar.current
     let daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"]
     
     @State private var selectedMonth = Date() // Stores the currently displayed month
-    
-    // Fake emotion log (Maps a date to an emoji/image name)
-    let fakeEmotionLog: [String: String] = [
-        "2025-02-02": "sparkly",
-        "2025-02-03": "sunny",// Happy
-        "2025-02-05": "cloudy", // Sad
-        "2025-02-10": "pleasant", // Angry
-        "2025-02-15": "stormy", // Tired
-        "2025-02-20": "rainy" // Excited
-    ]
+    @State private var moodEntries: [MoodEntry] = [] // Change moodEntries to @State so it can be updated
+
+    // Get the moods from the MoodDataManager
+    private func loadMoodEntries() {
+        moodEntries = MoodDataManager.shared.loadMoodEntries() // Load mood entries on demand
+    }
     
     let emotionColors: [String: Color] = [
-        "sparkly": Color("customRed"), // Happy
-        "sunny": Color("customOrange"),
-        "cloudy": Color("customBlue"), // Sad
-        "pleasant": Color("customYellow"), // Angry
-        "stormy": Color("customPink"), // Tired
-        "rainy": Color("customPurple") // Excited
+        "Excited": Color("Excited"), // Happy
+        "Happy": Color("Happy"),
+        "Anxious": Color("Anxious"), // Sad
+        "Calm": Color("Calm"), // Angry
+        "Angry": Color("Angry"), // Tired
+        "Sad": Color("Sad") // Excited
     ]
 
     var body: some View {
@@ -84,8 +81,8 @@ struct CalendarView: View {
                     ForEach(daysInMonth(), id: \.self) { day in
                         if let day = day {
                             let dateKey = dateString(from: day)
-                            let emotion = fakeEmotionLog[dateKey]
-                            let backgroundColor = emotion != nil ? emotionColors[emotion!] : Color("customGrey")
+                            let moodEntry = moodEntries.first(where: { $0.date == dateKey })
+                            let backgroundColor = moodEntry != nil ? emotionColors[moodEntry!.mood] ?? Color("customGrey") : Color("customGrey")
                             
                             VStack {
                                 Text("\(calendar.component(.day, from: day))")
@@ -93,14 +90,11 @@ struct CalendarView: View {
                                     .foregroundStyle(Color.black)
                                 
                                 // Fixed space for mood emoji (empty if no mood is logged)
-                                if let emotion = emotion {
-                                    
-                                    Image(emotion)
+                                if let moodEntry = moodEntry {
+                                    Image(moodEntry.mood)
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 50, height: 50)
-                                    
-                                    
                                 } else {
                                     Text(" ") // Keeps layout intact
                                         .font(.title2)
@@ -110,6 +104,12 @@ struct CalendarView: View {
                             .frame(width: 50, height: 80)
                             .background(backgroundColor)
                             .cornerRadius(10)
+                            .onTapGesture {
+                                // Update the selected date when a user taps a day
+                                selectedDate = day
+                                print("Selected date is \(selectedDate)")
+                                // Set the selected date to the tapped day
+                            }
                         } else {
                             Rectangle()
                                 .fill(Color.clear)
@@ -122,6 +122,11 @@ struct CalendarView: View {
             }
             
             Spacer()
+        }
+        .onAppear {
+            // Reload mood entries when the calendar view appears
+            loadMoodEntries()
+            print("Loaded mood entries in CalendarView: \(moodEntries)")  // Debugging
         }
     }
     
@@ -156,5 +161,6 @@ struct CalendarView: View {
 }
 
 #Preview {
-    CalendarView()
+    // Replace with a valid binding from a parent view
+    CalendarView(selectedDate: .constant(Date()))
 }
