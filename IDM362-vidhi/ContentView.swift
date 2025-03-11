@@ -20,6 +20,12 @@ struct ContentView: View {
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter.string(from: date)
     }
+    func displayDateString(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE, MMMM d, yyyy" // "Monday, March 10, 2025"
+        return formatter.string(from: date)
+    }
+
 
     var body: some View {
         NavigationStack {
@@ -31,7 +37,8 @@ struct ContentView: View {
                     .padding(10)
                     .foregroundStyle(Color("Color"))
                 
-                Text("Pick the cloud that matches your mood!")
+                Text("Pick your mood for \(displayDateString(from: selectedDate))")
+
                     .font(.title3)
                     .fontWeight(.semibold)
                     .multilineTextAlignment(.leading)
@@ -127,7 +134,7 @@ struct MoodDetailView: View {
                 MoodDataManager.shared.saveMoodEntry(newMoodEntry)
 
                 // After saving, go back to CalendarView
-                navigationState.currentView = 0
+                navigationState.currentView = 1
                 presentationMode.wrappedValue.dismiss()
                 
             }
@@ -172,6 +179,6 @@ struct MoodDetailView: View {
             moodImage: "sparkly",
             moodColor: Color(red: 1.0, green: 0.7137254901960784, blue: 0.592156862745098),
             selectedDate: .constant(Date())
-        )
+    ).environmentObject(NavigationState())
 }
 

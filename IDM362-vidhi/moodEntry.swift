@@ -7,8 +7,9 @@
 
 import Foundation
 
-struct MoodEntry: Codable {
+struct MoodEntry: Identifiable,Codable {
+    var id = UUID()
     let date: String
     let mood: String
-    let notes: String?
+    let notes: String
 }

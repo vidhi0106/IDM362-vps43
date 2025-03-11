@@ -13,7 +13,7 @@ class UserData: ObservableObject {
 import SwiftUI
 
 class NavigationState: ObservableObject {
-    @Published var currentView: Int = 0 // 0 for CalendarView, 1 for ContentView
+    @Published var currentView: Int = 0 // 1 for CalendarView, 0 for ContentView
 }
 
 struct MainView: View {
@@ -37,40 +37,32 @@ struct MainView: View {
     var body: some View {
         TabView(selection: $navigationState.currentView) {
             // Pass selectedDate as a Binding to CalendarView
-            CalendarView(selectedDate: $selectedDate)
-                .tabItem {
-                    Label("Calendar", systemImage: "calendar")
-                }
-                .tag(0) // Unique tag for CalendarView
-                .onAppear {
-                    // Trigger loadMoodEntries when Calendar tab is selected
-                    if navigationState.currentView == 0 {
-                        loadMoodEntries()
-                    }
-                }
-            
-            // Pass selectedDate as a Binding to ContentView
             ContentView(selectedDate: $selectedDate)
                 .tabItem {
                     Label("Mood", systemImage: "cloud.fill")
                 }
-                .tag(1) // Unique tag for ContentView
+                .tag(0) // Unique tag for ContentView
+            
+            CalendarView(selectedDate: $selectedDate)
+                .tabItem {
+                    Label("Calendar", systemImage: "calendar")
+                }
+                .tag(1) // Unique tag for CalendarView
+            
+        
         }
         .environmentObject(navigationState)
         .tint(Color("Color"))
         .onAppear {
             // Set unselected tab bar item color dynamically
             UITabBar.appearance().unselectedItemTintColor = UIColor(named: "navbar")
+            loadMoodEntries()
         }
         .environmentObject(userData)
         // Handle tab change with onChange (iOS 17.0 and later)
-        .onChange(of: navigationState.currentView) { newValue in
-            // Check if the CalendarView tab (tag 0) is selected
-            if newValue == 0 {
-                loadMoodEntries()
-            }
-        }
+        
     }
+    
 }
 
 

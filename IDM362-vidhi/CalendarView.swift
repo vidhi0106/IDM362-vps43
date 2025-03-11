@@ -3,7 +3,7 @@
 //  IDM362-vidhi
 //
 //  Created by Vidhi Shah  on 2/10/25.
-//
+
 
 import SwiftUI
 
@@ -13,22 +13,29 @@ struct CalendarView: View {
     let daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"]
     
     @State private var selectedMonth = Date() // Stores the currently displayed month
-    @State private var moodEntries: [MoodEntry] = [] // Change moodEntries to @State so it can be updated
-
+    @State private var moodEntries: [MoodEntry] = [] // Stores mood entries
+    @State private var selectedMoodEntry: MoodEntry? = nil // Track selected mood entry
+    @State private var isNavigatingToMoodDetail = false // Track if we need to navigate
+    
+    @EnvironmentObject var navigationState: NavigationState
+    @Environment(\.presentationMode) var presentationMode
+    
     // Get the moods from the MoodDataManager
     private func loadMoodEntries() {
+        print("Loading mood entries...")
         moodEntries = MoodDataManager.shared.loadMoodEntries() // Load mood entries on demand
+        print("Loaded mood entries: \(moodEntries)") // Debugging
     }
     
     let emotionColors: [String: Color] = [
-        "Excited": Color("Excited"), // Happy
+        "Excited": Color("Excited"),
         "Happy": Color("Happy"),
-        "Anxious": Color("Anxious"), // Sad
-        "Calm": Color("Calm"), // Angry
-        "Angry": Color("Angry"), // Tired
-        "Sad": Color("Sad") // Excited
+        "Anxious": Color("Anxious"),
+        "Calm": Color("Calm"),
+        "Angry": Color("Angry"),
+        "Sad": Color("Sad")
     ]
-
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -105,10 +112,21 @@ struct CalendarView: View {
                             .background(backgroundColor)
                             .cornerRadius(10)
                             .onTapGesture {
-                                // Update the selected date when a user taps a day
-                                selectedDate = day
-                                print("Selected date is \(selectedDate)")
-                                // Set the selected date to the tapped day
+                                // Check if a mood is logged for the selected date
+                                if let moodEntry = moodEntries.first(where: { $0.date == dateString(from: day) }) {
+                                    // If a mood entry exists, set the selected mood entry
+                                    selectedMoodEntry = moodEntry
+                                    isNavigatingToMoodDetail = true
+                                    selectedDate = day
+                                    print("Selected date is \(selectedDate) with mood \(moodEntry.mood)") // Debugging
+                                } else {
+                                    // If no mood entry exists, navigate to ContentView to log a new mood
+                                    navigationState.currentView = 0
+                                    presentationMode.wrappedValue.dismiss()
+                                    
+                                    selectedDate = day
+                                    print("No mood entry found for \(selectedDate). Navigating to ContentView") // Debugging
+                                }
                             }
                         } else {
                             Rectangle()
@@ -119,14 +137,19 @@ struct CalendarView: View {
                 }
                 .frame(height: 500)
                 .padding()
+                
+                // Navigate to MoodEntryView if needed
+                NavigationLink(destination: moodEntryView(
+                                selectedDate: $selectedDate,
+                                moodEntry: selectedMoodEntry ?? MoodEntry(date: "", mood: "", notes: "")),
+                               isActive: $isNavigatingToMoodDetail) {
+                    EmptyView()
+                }
             }
-            
-            Spacer()
-        }
-        .onAppear {
-            // Reload mood entries when the calendar view appears
-            loadMoodEntries()
-            print("Loaded mood entries in CalendarView: \(moodEntries)")  // Debugging
+            .onAppear {
+                loadMoodEntries()
+                print("New Loaded mood entries are: \(moodEntries)") // Debugging
+            }
         }
     }
     
@@ -160,7 +183,13 @@ struct CalendarView: View {
     }
 }
 
+
 #Preview {
-    // Replace with a valid binding from a parent view
+    // Create an instance of NavigationState
+    let navigationState = NavigationState()
+    
+    // Provide it as an environment object to the CalendarView
     CalendarView(selectedDate: .constant(Date()))
+        .environmentObject(NavigationState())
 }
+
