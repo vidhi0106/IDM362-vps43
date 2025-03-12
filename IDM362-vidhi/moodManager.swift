@@ -24,11 +24,19 @@ class MoodDataManager {
     // Save mood entry
     func saveMoodEntry(_ entry: MoodEntry) {
         var currentEntries = loadMoodEntries()
-        currentEntries.append(entry)
+        
+        // First check if we already have an entry for this date and replace it
+        if let index = currentEntries.firstIndex(where: { $0.date == entry.date }) {
+            currentEntries[index] = entry
+        } else {
+            currentEntries.append(entry)
+        }
         
         if let encoded = try? JSONEncoder().encode(currentEntries) {
             UserDefaults.standard.set(encoded, forKey: moodKey)
-            print("Mood saved: \(entry)")  // Debugging print
+            // Force synchronize to save immediately
+            UserDefaults.standard.synchronize()
+            print("Mood saved: \(entry)")
         }
     }
 }

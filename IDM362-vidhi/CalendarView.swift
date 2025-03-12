@@ -10,12 +10,13 @@ import SwiftUI
 struct CalendarView: View {
     @Binding var selectedDate: Date // Binding for the selected date
     let calendar = Calendar.current
-    let daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"]
+    let daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
     
     @State private var selectedMonth = Date() // Stores the currently displayed month
     @State private var moodEntries: [MoodEntry] = [] // Stores mood entries
     @State private var selectedMoodEntry: MoodEntry? = nil // Track selected mood entry
     @State private var isNavigatingToMoodDetail = false // Track if we need to navigate
+    @State private var refreshID = UUID() // refresh UUID
     
     @EnvironmentObject var navigationState: NavigationState
     @Environment(\.presentationMode) var presentationMode
@@ -23,8 +24,10 @@ struct CalendarView: View {
     // Get the moods from the MoodDataManager
     private func loadMoodEntries() {
         print("Loading mood entries...")
-        moodEntries = MoodDataManager.shared.loadMoodEntries() // Load mood entries on demand
-        print("Loaded mood entries: \(moodEntries)") // Debugging
+        DispatchQueue.main.async{
+            moodEntries = MoodDataManager.shared.loadMoodEntries() // Load mood entries on demand
+            print("Loaded mood entries: \(moodEntries)")
+        }// Debugging
     }
     
     let emotionColors: [String: Color] = [
@@ -85,8 +88,8 @@ struct CalendarView: View {
                 
                 // Calendar Grid
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 10) {
-                    ForEach(daysInMonth(), id: \.self) { day in
-                        if let day = day {
+                    ForEach(daysInMonth().indices, id: \.self) { index in
+                        if let day = daysInMonth()[index] {
                             let dateKey = dateString(from: day)
                             let moodEntry = moodEntries.first(where: { $0.date == dateKey })
                             let backgroundColor = moodEntry != nil ? emotionColors[moodEntry!.mood] ?? Color("customGrey") : Color("customGrey")
@@ -146,9 +149,13 @@ struct CalendarView: View {
                     EmptyView()
                 }
             }
+            .id(refreshID)
             .onAppear {
                 loadMoodEntries()
                 print("New Loaded mood entries are: \(moodEntries)") // Debugging
+            }
+            .onDisappear{
+                refreshID = UUID()
             }
         }
     }
@@ -158,10 +165,18 @@ struct CalendarView: View {
         let range = calendar.range(of: .day, in: .month, for: selectedMonth)!
         let firstDayOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: selectedMonth))!
         let firstWeekday = calendar.component(.weekday, from: firstDayOfMonth) - 1 // Adjust for 0-based index
-        
-        return Array(repeating: nil, count: firstWeekday) +
-               range.compactMap { calendar.date(byAdding: .day, value: $0 - 1, to: firstDayOfMonth) }
-    }
+        // Create placeholder objects with unique IDs for empty days
+            let emptyDays = (0..<firstWeekday).map { _ -> Date? in
+                return nil
+            }
+            
+            // Create actual date objects for days in month
+            let monthDays = range.map { day -> Date? in
+                return calendar.date(byAdding: .day, value: day - 1, to: firstDayOfMonth)
+            }
+            
+            return emptyDays + monthDays
+        }
 
     // Function to change months
     func changeMonth(by value: Int) {
