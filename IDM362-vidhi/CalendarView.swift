@@ -23,10 +23,10 @@ struct CalendarView: View {
     
     // Get the moods from the MoodDataManager
     private func loadMoodEntries() {
-        print("Loading mood entries...")
+//        print("Loading mood entries...")
         DispatchQueue.main.async{
             moodEntries = MoodDataManager.shared.loadMoodEntries() // Load mood entries on demand
-            print("Loaded mood entries: \(moodEntries)")
+//            print("Loaded mood entries: \(moodEntries)")
         }// Debugging
     }
     
@@ -40,6 +40,8 @@ struct CalendarView: View {
     ]
     
     var body: some View {
+        let today = calendar.startOfDay(for: Date()) // Define today's date
+        
         NavigationStack {
             VStack {
                 Text("MoodCloud")
@@ -93,11 +95,24 @@ struct CalendarView: View {
                             let dateKey = dateString(from: day)
                             let moodEntry = moodEntries.first(where: { $0.date == dateKey })
                             let backgroundColor = moodEntry != nil ? emotionColors[moodEntry!.mood] ?? Color("customGrey") : Color("customGrey")
+                            let isToday = calendar.isDate(day, inSameDayAs: today)
+                            let isFutureDate = day > today
                             
                             VStack {
+                                ZStack {
+                                if isToday {
+                                // Circle around the current date
+                                Rectangle()
+                               .fill(Color.white)
+//                               .stroke(Color.black, lineWidth: 2)
+                               .frame(width: 50, height: 30)
+                               
+                                                                }
                                 Text("\(calendar.component(.day, from: day))")
-                                    .font(.caption)
-                                    .foregroundStyle(Color.black)
+                                .font(.caption)
+                                .foregroundStyle(isFutureDate ? Color.gray : Color.black) // Grey out future dates
+                                .opacity(isFutureDate ? 0.4 : 1) // Reduce opacity for future dates
+                                                            }
                                 
                                 // Fixed space for mood emoji (empty if no mood is logged)
                                 if let moodEntry = moodEntry {
@@ -115,20 +130,22 @@ struct CalendarView: View {
                             .background(backgroundColor)
                             .cornerRadius(10)
                             .onTapGesture {
-                                // Check if a mood is logged for the selected date
-                                if let moodEntry = moodEntries.first(where: { $0.date == dateString(from: day) }) {
-                                    // If a mood entry exists, set the selected mood entry
-                                    selectedMoodEntry = moodEntry
-                                    isNavigatingToMoodDetail = true
-                                    selectedDate = day
-                                    print("Selected date is \(selectedDate) with mood \(moodEntry.mood)") // Debugging
-                                } else {
-                                    // If no mood entry exists, navigate to ContentView to log a new mood
-                                    navigationState.currentView = 0
-                                    presentationMode.wrappedValue.dismiss()
-                                    
-                                    selectedDate = day
-                                    print("No mood entry found for \(selectedDate). Navigating to ContentView") // Debugging
+                                if !isFutureDate {
+                                    // Check if a mood is logged for the selected date
+                                    if let moodEntry = moodEntries.first(where: { $0.date == dateString(from: day) }) {
+                                        // If a mood entry exists, set the selected mood entry
+                                        selectedMoodEntry = moodEntry
+                                        isNavigatingToMoodDetail = true
+                                        selectedDate = day
+                                        //                                    print("Selected date is \(selectedDate) with mood \(moodEntry.mood)") // Debugging
+                                    } else {
+                                        // If no mood entry exists, navigate to ContentView to log a new mood
+                                        navigationState.currentView = 0
+                                        presentationMode.wrappedValue.dismiss()
+                                        
+                                        selectedDate = day
+                                        print("No mood entry found for \(selectedDate). Navigating to ContentView") // Debugging
+                                    }
                                 }
                             }
                         } else {
@@ -152,7 +169,7 @@ struct CalendarView: View {
             .id(refreshID)
             .onAppear {
                 loadMoodEntries()
-                print("New Loaded mood entries are: \(moodEntries)") // Debugging
+//                print("New Loaded mood entries are: \(moodEntries)") // Debugging
             }
             .onDisappear{
                 refreshID = UUID()
