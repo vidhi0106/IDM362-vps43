@@ -49,6 +49,13 @@ struct MainView: View {
                 }
                 .tag(1) // Unique tag for CalendarView
             
+            AboutView()
+                .tabItem {
+                    Label("About", systemImage: "info.circle")
+                }
+                .tag(2)
+            
+            
         
         }
         .environmentObject(navigationState)
@@ -66,7 +73,7 @@ struct MainView: View {
 }
 
 
-//#Preview {
-//    MainView()
-//        .environmentObject(UserData())
-//}
+#Preview {
+    MainView()
+        .environmentObject(UserData())
+}
