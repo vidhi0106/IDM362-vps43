@@ -17,7 +17,7 @@ struct moodEntryView: View {
     @Binding var selectedDate: Date // Binding for selected date
     
     @State private var selectedMood = ""
-
+    
     
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var navigationState: NavigationState
@@ -31,71 +31,85 @@ struct moodEntryView: View {
     }
     
     var body: some View {
+        ZStack {
+            // 🔹 Full-screen background color
+            moodColor.opacity(0.2)
+                .edgesIgnoringSafeArea(.all)
+            
+            ScrollView {
+                VStack (spacing:0) {
         
-        VStack (spacing:30) {
-            
-            Text("Your mood on \(displayDateString(from: selectedDate))")
-                .font(.title)
-                .fontWeight(.bold)
-                .padding(10)
-                .multilineTextAlignment(.center)
-                
-                
-                
-            
-            VStack (spacing:-10) {
-                Image(moodImage)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 250, height: 250)
-                
-                Text(moodName)
-                    .font(.title)
-                    .fontWeight(.bold)
-
+                    
+                    Text("Your mood on \(displayDateString(from: selectedDate))")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .padding(10)
+                        .multilineTextAlignment(.center)
+                    
+                    
+                    
+                    
+                    VStack (spacing:-10) {
+                        Image(moodImage)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 250, height: 250)
+                        
+                        Text(moodName)
+                            .font(.title)
+                            .fontWeight(.bold)
+                        
+                    }
+                    
+                    
+                    
+                    VStack (spacing:-10) {
+                        Text("Your Notes")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .multilineTextAlignment(.leading)
+                            .padding(10)
+                        
+                        Text(notes)
+                            .font(.title3)
+                            .padding(10)
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                }
+                Spacer()
+//                .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                .background(moodColor.opacity(0.2)
+//                    .edgesIgnoringSafeArea(.all))
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("MoodCloud")
+                            .font(.title)
+                            .multilineTextAlignment(.center)
+                            .fontWeight(.bold)
+                            .foregroundStyle(Color("Color"))
+                    }
+                    
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button(action: {}) {}.tint(Color("Color"))
+                    }
+                }
             }
-            
-            
-        
-            VStack (spacing:-10) {
-                Text("Your Notes")
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.leading)
-                    .padding(10)
-                
-                Text(notes)
-                    .font(.title3)
-                    .padding(10)
-            }
-                
-            
-            
-            
             Spacer()
+            
             
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(moodColor.opacity(0.2)
-        .edgesIgnoringSafeArea(.all))
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("MoodCloud")
-                    .font(.title)
-                    .multilineTextAlignment(.center)
-                    .fontWeight(.bold)
-                    .foregroundStyle(Color("Color"))
-            }
-
-            ToolbarItem(placement: .topBarLeading) {
-                Button(action: {}) {}.tint(Color("Color"))
-            }
-        }
+            .edgesIgnoringSafeArea(.all))
     }
-
-        
-    }
+    
+}
    
     
     

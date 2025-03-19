@@ -39,5 +39,12 @@ class MoodDataManager {
             print("Mood saved: \(entry)")
         }
     }
+    
+    
+    func hasMoodEntry(for date: String) -> Bool {
+            let savedEntries = loadMoodEntries()
+            return savedEntries.contains { $0.date == date }
+        }
+    
 }
 
