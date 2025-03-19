@@ -73,7 +73,7 @@ struct MainView: View {
 }
 
 
-#Preview {
-    MainView()
-        .environmentObject(UserData())
-}
+//#Preview {
+//    MainView()
+//        .environmentObject(UserData())
+//}

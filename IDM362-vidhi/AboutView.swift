@@ -5,10 +5,10 @@ struct AboutView: View {
         VStack(spacing: 30) {
             // App Title
             Text("MoodCloud")
-                .font(.largeTitle)
+                .font(.title)
                 .fontWeight(.bold)
                 .foregroundColor(Color("Color"))
-                .padding(.top, 20)
+                .padding(10)
             
             // Tagline
             Text("Track your mood, understand yourself! ")
